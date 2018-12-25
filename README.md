@@ -14,3 +14,7 @@
     - `milestone`
   - `ci_pipelines`
   - `pipelines`
+- rewrite links between issues and merge requests
+- replace iid's in descriptions of issues and merge requests
+  - issues: `#iid` or `project#iid`
+  - merge requests: `!iid` or `project!iid`
