@@ -1,4 +1,4 @@
-# merge-gitlab-exports
+# merge-gitlab-projects
 
 ## Requirements
 `// Todo`
