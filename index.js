@@ -1,13 +1,16 @@
 const glob = require('glob')
 const fs = require('fs')
 
-const outputFileName = 'out/test.json'
+const outputFileName = 'out/project.json'
 
 const inputSourceProjects = []
 let inputDestinationProject
 
 const mergedData = {
   issues: [],
+  merge_requests: [],
+  ci_pipelines: [],
+  pipelines: [],
 }
 
 const getName = (path) => path.match(/(in|out)\/source_projects\/(.*)\/project.json/)[2]
@@ -18,9 +21,21 @@ glob.sync('in/source_projects/*/project.json')
   .map((route) => {
     console.log(`read ${route}`)
     const name = getName(route)
+    const content = JSON.parse(fs.readFileSync(route))
+
+    const mapping = {}
+
+    Object.keys(mergedData).forEach((entity) => {
+      mapping[entity] = {}
+
+      content[entity].map((element) => {
+        mapping[entity][element.id] = element.id
+      })
+    })
+
     inputSourceProjects[name] = {
-      mapping: {},
-      content: JSON.parse(fs.readFileSync(route)),
+      mapping,
+      content,
     }
   })
 
@@ -31,18 +46,29 @@ glob.sync('in/destination_project/*/project.json')
   })
 
 Object.entries(inputSourceProjects).map(([key, value]) => {
-  console.log({ key })
-  // console.log(value)
-  mergedData.issues = mergedData.issues.concat(value.content.issues)
+  Object.keys(mergedData).forEach((entity) => {
+    mergedData[entity] = mergedData[entity].concat(value.content[entity])
+  })
 })
 
 mergedData.issues.sort(orderByCreationDate)
 
-console.log({ issueLenght: mergedData.issues.length })
+Object.keys(mergedData).forEach((entity) => {
+  let iid = 0
+
+  mergedData[entity] = mergedData[entity].map((element) => {
+    iid++
+
+    return {
+      ...element,
+      iid,
+    }
+  })
+})
 
 const output = {
   ...inputDestinationProject,
-  ...mergedData, // test
+  ...mergedData,
 }
 
 console.log(`write ${outputFileName}`)
