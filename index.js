@@ -33,7 +33,7 @@ glob.sync('in/destination_project/*/project.json')
     inputDestinationProject = JSON.parse(fs.readFileSync(route))
   })
 
-// go through all projects and contatinate entries of each entity into mergedData
+// go through all projects and concatinate entries of each entity into mergedData
 Object.entries(inputSourceProjects).map(([projectName, projectData]) => {
   Object.keys(mergedData).forEach((entity) => {
     // keep association of id to old iid and the project name
