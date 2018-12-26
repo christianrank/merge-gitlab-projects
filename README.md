@@ -21,3 +21,7 @@
 
 ## Possible improvements
 - What about links to issues and merge requests in the git commit log? This is not rewritten yet.
+
+---
+
+License: MIT
