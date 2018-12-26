@@ -16,7 +16,7 @@ const mergedData = {
 
 // helper functions
 const getName = (path) => path.match(/(in|out)\/source_projects\/(.*)\/project.json/)[2]
-const orderByCreationDate = (a, b) => new Date(a.element.created_at) - new Date(b.element.created_at)
+const orderByCreationDate = (a, b) => new Date(a.content.created_at) - new Date(b.content.created_at)
 
 // get source projects
 glob.sync('in/source_projects/*/project.json')
@@ -48,7 +48,7 @@ Object.keys(mergedData).forEach((entity) => {
     return {
       id: element.id,
       oldIid: element.iid,
-      element,
+      content: element,
     }
   })
 
@@ -63,7 +63,7 @@ Object.keys(mergedData).forEach((entity) => {
     return {
       ...element,
       element: {
-        ...element.element,
+        ...element.content,
         iid,
       },
       newIid: iid,
@@ -74,7 +74,7 @@ Object.keys(mergedData).forEach((entity) => {
 const outputEntityData = {}
 
 Object.entries(mergedData).forEach(([entity, elements]) => {
-  outputEntityData[entity] = elements.map((element) => element.element) // todo: think about naming...
+  outputEntityData[entity] = elements.map((element) => element.content)
 })
 
 // create the output
