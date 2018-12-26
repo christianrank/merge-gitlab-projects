@@ -63,7 +63,7 @@ Object.keys(mergedData).forEach((entity) => {
 
     return {
       ...element,
-      element: {
+      content: {
         ...element.content,
         iid,
       },
@@ -109,15 +109,17 @@ const replaceEntityLinks = (projectName, content) => {
   }
 }
 
-Object.entries(mergedData).forEach(([entity, elements]) => {
-  elements.forEach((element) => {
+Object.entries(mergedData).map(([entity, elements]) => {
+  mergedData[entity] = elements.map((element, index) => {
     if (element.content.description) {
-      replaceEntityLinks(element.projectName, element.content.description)
+      element.content.description = replaceEntityLinks(element.projectName, element.content.description)
     }
 
     if (element.content.notes) {
-      element.content.notes.forEach((note) => replaceEntityLinks(element.projectName, note.note))
+      element.content.notes = element.content.notes.map((note) => replaceEntityLinks(element.projectName, note.note))
     }
+
+    return element
   })
 })
 
