@@ -1,5 +1,6 @@
 const glob = require('glob')
 const fs = require('fs')
+const he = require('he')
 
 const outputFileName = 'out/project.json'
 
@@ -76,23 +77,35 @@ const projectNamesForRegex = Object.keys(inputSourceProjects).join('|')
 const regex = new RegExp(`(${projectNamesForRegex})?(!|#)(\\d+)`)
 
 const replaceEntityLinks = (projectName, content) => {
+  const decodedContent = he.decode(content)
   const results = content.match(regex)
 
   if (results) {
-    const [
-      replace,
+    let [
+      oldLink,
       targetProjectName,
       entityIdentifier,
-      targetIid,
+      oldIid,
     ] = results
 
-    console.log({
-      projectName,
-      replace,
-      targetProjectName,
-      entityIdentifier,
-      targetIid,
-    })
+    targetProjectName = targetProjectName || projectName
+    oldIid = parseInt(oldIid)
+
+    const entity = entityIdentifier === '#' ? 'issues' : 'merge_requests'
+
+    const element = mergedData[entity].find((element) => (
+      element.projectName === targetProjectName && element.oldIid === oldIid
+    ))
+
+    let newLink
+
+    if (element) {
+      newLink = `${entityIdentifier}${element.newIid}`
+    } else {
+      newLink = '*(invalid link)*'
+    }
+
+    content = he.encode(decodedContent.replace(oldLink, newLink))
   }
 }
 
