@@ -36,20 +36,21 @@ glob.sync('in/destination_project/*/project.json')
 // go through all projects and contatinate entries of each entity into mergedData
 Object.entries(inputSourceProjects).map(([projectName, projectData]) => {
   Object.keys(mergedData).forEach((entity) => {
-    mergedData[entity] = mergedData[entity].concat(projectData[entity])
+    // keep association of id to old iid and the project name
+    const enhancedProjectData = projectData[entity].map((element) => {
+      return {
+        projectName,
+        id: element.id,
+        oldIid: element.iid,
+        content: element,
+      }
+    })
+
+    mergedData[entity] = mergedData[entity].concat(enhancedProjectData)
   })
 })
 
 Object.keys(mergedData).forEach((entity) => {
-  // keep association of id to old iid
-  mergedData[entity] = mergedData[entity].map((element) => {
-    return {
-      id: element.id,
-      oldIid: element.iid,
-      content: element,
-    }
-  })
-
   // sort every entity by creation date
   mergedData[entity].sort(orderByCreationDate)
 
@@ -72,10 +73,39 @@ Object.keys(mergedData).forEach((entity) => {
 
 // replace iid's in notes and descriptions of issues and merge requests
 const projectNamesForRegex = Object.keys(inputSourceProjects).join('|')
-const regex = new RegExp(`/(${projectNamesForRegex})?(!|#)(\\d+)/g`)
+const regex = new RegExp(`(${projectNamesForRegex})?(!|#)(\\d+)`)
 
-Object.keys(mergedData).forEach((entity) => {
-  // todo
+const replaceEntityLinks = (projectName, content) => {
+  const results = content.match(regex)
+
+  if (results) {
+    const [
+      replace,
+      targetProjectName,
+      entityIdentifier,
+      targetIid,
+    ] = results
+
+    console.log({
+      projectName,
+      replace,
+      targetProjectName,
+      entityIdentifier,
+      targetIid,
+    })
+  }
+}
+
+Object.entries(mergedData).forEach(([entity, elements]) => {
+  elements.forEach((element) => {
+    if (element.content.description) {
+      replaceEntityLinks(element.projectName, element.content.description)
+    }
+
+    if (element.content.notes) {
+      element.content.notes.forEach((note) => replaceEntityLinks(element.projectName, note.note))
+    }
+  })
 })
 
 // for the output, we just need element.content
