@@ -50,9 +50,10 @@ Object.keys(mergedData).forEach((entity) => {
     }
   })
 
-  // sort every entity by creation date and assign new iid's
+  // sort every entity by creation date
   mergedData[entity].sort(orderByCreationDate)
 
+  // assign new iid's
   let iid = 0
 
   mergedData[entity] = mergedData[entity].map((element) => {
@@ -69,6 +70,15 @@ Object.keys(mergedData).forEach((entity) => {
   })
 })
 
+// replace iid's in notes and descriptions of issues and merge requests
+const projectNamesForRegex = Object.keys(inputSourceProjects).join('|')
+const regex = new RegExp(`/(${projectNamesForRegex})?(!|#)(\\d+)/g`)
+
+Object.keys(mergedData).forEach((entity) => {
+  // todo
+})
+
+// for the output, we just need element.content
 const outputEntityData = {}
 
 Object.entries(mergedData).forEach(([entity, elements]) => {
