@@ -12,8 +12,8 @@
     - [ ] `milestone`
   - [x] `merge_requests`
     - [ ] `milestone`
-  - [x] `ci_pipelines`
-  - [x] `pipelines`
+  - [ ] ~~`ci_pipelines`~~
+  - [ ] ~~`pipelines`~~
 - [ ] replace iid's in notes and descriptions of issues and merge requests
   - [ ] `issues[].description` and `merge_requests[].description`
     - [ ] issues: `#iid` or `project#iid`

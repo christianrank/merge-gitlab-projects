@@ -10,8 +10,6 @@ let inputDestinationProject
 const mergedData = {
   issues: [],
   merge_requests: [],
-  ci_pipelines: [],
-  pipelines: [],
 }
 
 // helper functions
