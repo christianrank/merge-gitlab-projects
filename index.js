@@ -1,6 +1,5 @@
 const glob = require('glob')
 const fs = require('fs')
-const he = require('he')
 
 const outputFileName = 'out/project.json'
 
@@ -74,50 +73,78 @@ Object.keys(mergedData).forEach((entity) => {
 
 // replace iid's in notes and descriptions of issues and merge requests
 const projectNamesForRegex = Object.keys(inputSourceProjects).join('|')
-const regex = new RegExp(`(${projectNamesForRegex})?(!|#)(\\d+)`)
+const regex = new RegExp(`(${projectNamesForRegex})?(!|#)(\\d+)`, 'g')
 
 const replaceEntityLinks = (projectName, content) => {
-  const decodedContent = he.decode(content)
-  const results = content.match(regex)
+  let newContent = content
+  const results = []
 
-  if (results) {
-    let [
-      oldLink,
-      targetProjectName,
-      entityIdentifier,
-      oldIid,
-    ] = results
+  let result
 
-    targetProjectName = targetProjectName || projectName
-    oldIid = parseInt(oldIid)
-
-    const entity = entityIdentifier === '#' ? 'issues' : 'merge_requests'
-
-    const element = mergedData[entity].find((element) => (
-      element.projectName === targetProjectName && element.oldIid === oldIid
-    ))
-
-    let newLink
-
-    if (element) {
-      newLink = `${entityIdentifier}${element.newIid}`
-    } else {
-      newLink = '*(invalid link)*'
-    }
-
-    content = he.encode(decodedContent.replace(oldLink, newLink))
+  while ((result = regex.exec(content)) !== null) {
+    results.push(result)
   }
+
+  if (results.length) {
+    results.forEach((result) => {
+      let [
+        oldLink,
+        targetProjectName,
+        entityIdentifier,
+        oldIid,
+      ] = result
+
+      targetProjectName = targetProjectName || projectName
+      oldIid = parseInt(oldIid)
+
+      const entity = entityIdentifier === '#' ? 'issues' : 'merge_requests'
+
+      const element = mergedData[entity].find((element) => (
+        element.projectName === targetProjectName && element.oldIid === oldIid
+      ))
+
+      let newLink
+
+      if (element) {
+        newLink = `${entityIdentifier}${element.newIid}`
+      } else {
+        newLink = '*(invalid link)*'
+      }
+
+      newContent = newContent.replace(oldLink, newLink)
+    })
+
+    return newContent
+  }
+
+  return content
 }
 
 Object.entries(mergedData).map(([entity, elements]) => {
   mergedData[entity] = elements.map((element, index) => {
     if (element.content.description) {
+      // console.log({ old: element.content.description })
+      // const old = element.content.description
       element.content.description = replaceEntityLinks(element.projectName, element.content.description)
+      // console.log({ new: element.content.description })
+      // if (old !== element.content.description) {
+      //   console.log({
+      //     old,
+      //     new: element.content.description,
+      //   })
+      // }
     }
 
-    if (element.content.notes) {
-      element.content.notes = element.content.notes.map((note) => replaceEntityLinks(element.projectName, note.note))
-    }
+    // if (element.content.notes) {
+    //   // const old = element.content.notes
+    //   element.content.notes = element.content.notes.map((note) => replaceEntityLinks(element.projectName, note.note))
+    //   // if (old !== element.content.notes) {
+    //   //   console.log({
+    //   //     old,
+    //   //     new: element.content.notes,
+    //   //   })
+    //   // }
+    // }
 
     return element
   })
