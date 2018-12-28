@@ -123,7 +123,7 @@ const replaceEntityLinks = (projectName, content) => {
 Object.entries(mergedData).map(([entity, elements]) => {
   mergedData[entity] = elements.map((element, index) => {
     if (element.content.description) {
-      replaceEntityLinks(element.projectName, element.content.description)
+      element.content.description = replaceEntityLinks(element.projectName, element.content.description)
     }
 
     if (element.content.notes) {
