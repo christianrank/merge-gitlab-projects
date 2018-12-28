@@ -71,7 +71,7 @@ Object.keys(mergedData).forEach((entity) => {
   })
 })
 
-// replace iid's in notes and descriptions of issues and merge requests
+// replace iid's in descriptions and notes of issues and merge requests
 const projectNamesForRegex = Object.keys(inputSourceProjects).join('|')
 const regex = new RegExp(`(${projectNamesForRegex})?(!|#)(\\d+)`, 'g')
 
@@ -123,28 +123,15 @@ const replaceEntityLinks = (projectName, content) => {
 Object.entries(mergedData).map(([entity, elements]) => {
   mergedData[entity] = elements.map((element, index) => {
     if (element.content.description) {
-      // console.log({ old: element.content.description })
-      // const old = element.content.description
-      element.content.description = replaceEntityLinks(element.projectName, element.content.description)
-      // console.log({ new: element.content.description })
-      // if (old !== element.content.description) {
-      //   console.log({
-      //     old,
-      //     new: element.content.description,
-      //   })
-      // }
+      replaceEntityLinks(element.projectName, element.content.description)
     }
 
-    // if (element.content.notes) {
-    //   // const old = element.content.notes
-    //   element.content.notes = element.content.notes.map((note) => replaceEntityLinks(element.projectName, note.note))
-    //   // if (old !== element.content.notes) {
-    //   //   console.log({
-    //   //     old,
-    //   //     new: element.content.notes,
-    //   //   })
-    //   // }
-    // }
+    if (element.content.notes) {
+      element.content.notes = element.content.notes.map((note) => ({
+        ...note,
+        note: replaceEntityLinks(element.projectName, note.note),
+      }))
+    }
 
     return element
   })
