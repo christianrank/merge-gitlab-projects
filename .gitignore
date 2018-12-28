@@ -1,7 +1,10 @@
 node_modules
+
 in/source_projects/*
 !in/source_projects/.gitkeep
+
 in/destination_project/*
 !in/destination_project/.gitkeep
+
 out/*
 !out/.gitkeep
