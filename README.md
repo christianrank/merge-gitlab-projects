@@ -9,19 +9,18 @@ Also it does not merge the git repos. It only creates a new project.json. But th
 
 ## Howto
 1. create a new project on GitLab
-2. clone the new project
-3. merge your old repos into the new repo using a tool like [tomono](https://github.com/unravelin/tomono) or [monorepo-tools](https://github.com/shopsys/monorepo-tools)
-4. clone this repository
-5. export your source projects, unpack them into `in/source_projects`, one folder for each project.
+1. clone the new project
+1. merge your old repos into the new repo using a tool like [tomono](https://github.com/unravelin/tomono) or [monorepo-tools](https://github.com/shopsys/monorepo-tools)
+1. export your source projects, unpack them into `in/source_projects`, one folder for each project
    - Example:
       - `in/source_projects/web`
       - `in/source_projects/api`
-6. export your destination project, unpack it into `in/destination_project` into a folder.
+1. export your destination project, unpack it into `in/destination_project` into a folder
    - Example:
       - `in/destination_project/newproject`
-7. Run the script. ```node index```
-8. The new `project.json` is written to `out/project.json`
-9. Copy it to your destination project folder, pack it again and import it in GitLab.
+1. run the script. ```node index```
+1. the new `project.json` is written to `out/project.json`
+1. copy it to your destination project folder, pack it again and import it in GitLab
 
 ## Possible improvements
 - links to issues and merge requests in the git commit log are not rewritten yet
