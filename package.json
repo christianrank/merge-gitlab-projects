@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "yarn",
     "lint": "eslint .",
-    "start": "yarn clean && nodemon app"
+    "start": "yarn clean && node index"
   },
   "repository": "git@github.com:christianrank/merge-gitlab-projects.git",
   "author": "Christian Rank",
